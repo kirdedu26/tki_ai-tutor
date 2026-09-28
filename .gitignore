@@ -1,0 +1,17 @@
+# 배포 플랫폼 설정·비밀값
+.vercel
+.env*
+
+# 옛 버전 사본과 압축본
+TKI 갈등코치/
+TKI 갈등코치.zip
+
+# 자문·검토 문서
+*.docx
+*.xlsx
+
+# 대시보드는 별도 저장소(tki_ai-tutor_dashboard)로 배포한다.
+# 파일은 이 폴더에 그대로 두고(단일 원본), publish_dashboard.py가 옮긴다.
+dashboard.html
+src/dashboard.js
+publish/
