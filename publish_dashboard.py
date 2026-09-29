@@ -14,6 +14,13 @@
 """
 import filecmp, os, re, shutil, subprocess, sys
 
+# 한국어 Windows 콘솔은 기본이 cp949라 '—' 같은 문자에서 죽는다. 출력만 UTF-8로 돌린다.
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 SRC = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(SRC, 'publish', 'dashboard')
 REMOTE = 'https://github.com/kirdedu26/tki_ai-tutor_dashboard.git'
@@ -64,7 +71,14 @@ https://kirdedu26.github.io/tki_ai-tutor_dashboard/dashboard.html#token=<READ_TO
 ## 수집 항목
 
 이름·학번은 수집하지 않습니다. 진단 백분위 5개, 프로파일(직군·역할·상대 유형), 실습별
-타깃·상대·결말, 결정별 (단계·대응유형·상황 적합 경향)입니다.
+타깃·상대·결말·소요 시간, 결정별 (단계·대응유형·상황 적합 경향)입니다.
+
+## CSV 내보내기
+
+우측 상단에서 원본을 CSV로 받습니다. 결정 하나가 한 행이고, 완료하지 않은 세션도 한 행씩
+들어갑니다. 엑셀 피벗을 전제로 만들었습니다 — 세션 정보는 9행, 실습 정보는 3행에 걸쳐
+반복되므로, 세션 수·실습 수를 셀 때는 `세션첫행`·`실습첫행` 열을 **합계**로 쓰세요.
+자세한 설명은 튜터 저장소의 README에 있습니다.
 """
 
 

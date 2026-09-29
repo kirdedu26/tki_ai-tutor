@@ -275,6 +275,7 @@
       stage: 1,        // 1 = beat1, 2 = beat2, 3 = beat3
       node: null,      // 현재 beat2 노드 키
       stateIdx: stateIndex(scenario.startState),
+      startedAt: Date.now(), // 실습 소요 시간 측정 시작점
       path: [],
       messages: [],
       locked: true,
@@ -384,6 +385,7 @@
         startState: cur.scenario.startState,
         path: cur.path.slice(),
         endingKey: endingKey,
+        durationSec: cur.startedAt ? Math.round((Date.now() - cur.startedAt) / 1000) : null,
       });
       cur.nextPhase = "feedback";
       render();
@@ -1771,7 +1773,12 @@
   function tkiSendStart() {
     if (__startSent) return;
     __startSent = true;
-    tkiPost({ id: ensureSid(), event: "start", startedAt: new Date().toISOString() });
+    // 프로파일·백분위를 함께 싣는다. 중도 이탈 세션도 '누가 어디서 멈췄는지'를
+    // 볼 수 있어야 완료율이 숫자 하나로 끝나지 않는다.
+    tkiPost({
+      id: ensureSid(), event: "start", startedAt: new Date().toISOString(),
+      profile: state.profile, scores: state.scores, scoreScale: "percentile",
+    });
   }
 
   // 종합 화면 도달(끝까지 완료) 시 1회. 완료율의 분자가 된다.
@@ -1785,6 +1792,7 @@
         return {
           scenarioKey: h.scenarioKey, target: h.target, opponentType: h.opponentType,
           requires: h.requires, startState: h.startState, endingKey: h.endingKey,
+          durationSec: h.durationSec == null ? null : h.durationSec,
           decisions: h.path.map(function (p) { return { stage: p.stage, mode: p.mode, fit: p.fit }; })
         };
       })
